@@ -42,7 +42,7 @@ public class ActionDoneParser
     private int getDtObjectActions = 0;
 
     private int searchActions = 0;
-
+    private int catalogsAction;
     boolean nan = true;
 
     private HashMap<String, Integer> actions = new HashMap<>();
@@ -150,6 +150,8 @@ public class ActionDoneParser
         return searchActions;
     }
 
+    public int getCatalogsAction () {return catalogsAction;}
+
     public double getStddev()
     {
         return stddev;
@@ -207,6 +209,10 @@ public class ActionDoneParser
             else if (actionInLowerCase.matches("(?i)[a-zA-Z]+search[a-zA-Z]+"))
             {
                 searchActions++;
+            }
+            else if (actionInLowerCase.matches("getcatalogsaction"))
+            {
+                catalogsAction++;
             }
 
         }
