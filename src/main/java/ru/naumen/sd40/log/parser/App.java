@@ -9,7 +9,11 @@ import java.util.HashMap;
 import org.influxdb.dto.BatchPoints;
 
 import ru.naumen.perfhouse.influx.InfluxDAO;
-import ru.naumen.sd40.log.parser.GCParser.GCTimeParser;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.GcDataParser;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.IDataParser;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.SdngDataParser;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.TopDataParser;
+import ru.naumen.sd40.log.parser.parsers.timeParsers.*;
 
 /**
  * Created by doki on 22.10.16.
@@ -22,6 +26,9 @@ public class App
      * @throws IOException
      * @throws ParseException
      */
+    private static final String SdngMode = "sdng";
+    private static  final String GcMode = "gc";
+    private static final String TopMode = "top";
     public static void main(String[] args) throws IOException, ParseException
     {
         String influxDb = null;
@@ -53,72 +60,43 @@ public class App
 
         HashMap<Long, DataSet> data = new HashMap<>();
 
-        TimeParser timeParser = new TimeParser();
-        GCTimeParser gcTime = new GCTimeParser();
-        if (args.length > 2)
-        {
-            timeParser = new TimeParser(args[2]);
-            gcTime = new GCTimeParser(args[2]);
-        }
-
+        ITimeParser timeParser;
+        IDataParser dataParser ;
         String mode = System.getProperty("parse.mode", "");
-        switch (mode)
+        switch (mode){
+            case SdngMode:
+                timeParser = new SdngTimeParser();
+                dataParser = new SdngDataParser();
+                break;
+            case GcMode:
+                timeParser = new GcTimeParser();
+                dataParser = new GcDataParser();
+                break;
+            case TopMode:
+                timeParser = new TopTimeParser(log);
+                dataParser = new TopDataParser();
+                break;
+            default:
+                throw new IllegalArgumentException(
+                       "Unknown parse mode! Availiable modes: sdng, gc, top. Requested mode: " + mode);
+        }
+        if (args.length > 2)
+            timeParser.configureTimeZone(args[2]);
+
+        DataSet obj = null;
+        try (BufferedReader br = new BufferedReader(new FileReader(log), dataParser.getBufferSize()))
         {
-        case "sdng":
-            //Parse sdng
-            try (BufferedReader br = new BufferedReader(new FileReader(log), 32 * 1024 * 1024))
+            String line;
+            while ((line = br.readLine()) != null)
             {
-                String line;
-                while ((line = br.readLine()) != null)
-                {
-                    long time = timeParser.parseLine(line);
+                long time = timeParser.parseTime(line);
 
-                    if (time == 0)
-                    {
-                        continue;
-                    }
-
-                    int min5 = 5 * 60 * 1000;
-                    long count = time / min5;
-                    long key = count * min5;
-
-                    data.computeIfAbsent(key, k -> new DataSet()).parseLine(line);
-                }
+                if (time == 0 && mode != TopMode && obj != null)
+                    continue;
+                long key = TimeHandleHelper.prepareDate(time);
+                obj = data.computeIfAbsent(key, k -> new DataSet());
+                dataParser.parseLine(line, obj);
             }
-            break;
-        case "gc":
-            //Parse gc log
-            try (BufferedReader br = new BufferedReader(new FileReader(log)))
-            {
-                String line;
-                while ((line = br.readLine()) != null)
-                {
-                    long time = gcTime.parseTime(line);
-
-                    if (time == 0)
-                    {
-                        continue;
-                    }
-
-                    int min5 = 5 * 60 * 1000;
-                    long count = time / min5;
-                    long key = count * min5;
-                    data.computeIfAbsent(key, k -> new DataSet()).parseGcLine(line);
-                }
-            }
-            break;
-        case "top":
-            TopParser topParser = new TopParser(log, data);
-            if (args.length > 2)
-            {
-                topParser.configureTimeZone(args[2]);
-            }
-            //Parse top
-            topParser.parse();
-            break;
-        default:
-            throw new IllegalArgumentException(
-                    "Unknown parse mode! Availiable modes: sdng, gc, top. Requested mode: " + mode);
         }
 
         if (System.getProperty("NoCsv") == null)
