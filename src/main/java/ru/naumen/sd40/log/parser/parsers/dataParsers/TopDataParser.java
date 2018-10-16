@@ -1,24 +1,22 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import ru.naumen.sd40.log.parser.DataSet;
-import ru.naumen.sd40.log.parser.parsers.dataParsers.IDataParser;
 
 import java.text.SimpleDateFormat;
-import java.util.Map;
 import java.util.TimeZone;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class TopDataParser implements IDataParser {
 
-    private SimpleDateFormat sdf = new SimpleDateFormat("yyyyMMddHH:mm");
+    private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHH:mm");
     private Pattern cpuAndMemPattren = Pattern
             .compile("^ *\\d+ \\S+ +\\S+ +\\S+ +\\S+ +\\S+ +\\S+ +\\S+ \\S+ +(\\S+) +(\\S+) +\\S+ java");
 
     public TopDataParser() throws IllegalArgumentException
     {
         //Supports these masks in file name: YYYYmmdd, YYY-mm-dd i.e. 20161101, 2016-11-01
-        sdf.setTimeZone(TimeZone.getTimeZone("GMT"));
+        simpleDateFormat.setTimeZone(TimeZone.getTimeZone("GMT"));
     }
 
     @Override

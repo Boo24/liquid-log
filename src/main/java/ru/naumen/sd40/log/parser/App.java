@@ -9,10 +9,7 @@ import java.util.HashMap;
 import org.influxdb.dto.BatchPoints;
 
 import ru.naumen.perfhouse.influx.InfluxDAO;
-import ru.naumen.sd40.log.parser.parsers.dataParsers.GcDataParser;
-import ru.naumen.sd40.log.parser.parsers.dataParsers.IDataParser;
-import ru.naumen.sd40.log.parser.parsers.dataParsers.SdngDataParser;
-import ru.naumen.sd40.log.parser.parsers.dataParsers.TopDataParser;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.*;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.*;
 
 /**
@@ -60,43 +57,30 @@ public class App
 
         HashMap<Long, DataSet> data = new HashMap<>();
 
-        ITimeParser timeParser;
-        IDataParser dataParser ;
+        BaseDataHandler dataHandler;
         String mode = System.getProperty("parse.mode", "");
         switch (mode){
             case SdngMode:
-                timeParser = new SdngTimeParser();
-                dataParser = new SdngDataParser();
+                dataHandler = new SingleLineHandler(new SdngDataParser(),new SdngTimeParser(),  data);
                 break;
             case GcMode:
-                timeParser = new GcTimeParser();
-                dataParser = new GcDataParser();
+                dataHandler = new SingleLineHandler(new GcDataParser(), new GcTimeParser(), data);
                 break;
             case TopMode:
-                timeParser = new TopTimeParser(log);
-                dataParser = new TopDataParser();
+                dataHandler = new ChunkHandler(new TopDataParser(), new TopTimeParser(log), data);
                 break;
             default:
                 throw new IllegalArgumentException(
                        "Unknown parse mode! Availiable modes: sdng, gc, top. Requested mode: " + mode);
         }
         if (args.length > 2)
-            timeParser.configureTimeZone(args[2]);
+            dataHandler.configureTimeParser(args[2]);
 
-        DataSet obj = null;
-        try (BufferedReader br = new BufferedReader(new FileReader(log), dataParser.getBufferSize()))
+        try (BufferedReader br = new BufferedReader(new FileReader(log), dataHandler.getBuffSize()))
         {
             String line;
             while ((line = br.readLine()) != null)
-            {
-                long time = timeParser.parseTime(line);
-
-                if (time == 0 && mode != TopMode && obj != null)
-                    continue;
-                long key = TimeHandleHelper.prepareDate(time);
-                obj = data.computeIfAbsent(key, k -> new DataSet());
-                dataParser.parseLine(line, obj);
-            }
+                dataHandler.handleLine(line);
         }
 
         if (System.getProperty("NoCsv") == null)
