@@ -11,7 +11,7 @@ import org.joda.time.format.DateTimeFormatter;
  * @author dkolmogortsev
  *
  */
-public class InfluxDateHelper
+public class   InfluxDateHelper
 {
     /**
      * get {@link InfluxDateRange}

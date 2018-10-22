@@ -9,7 +9,8 @@ import java.util.HashMap;
 import org.influxdb.dto.BatchPoints;
 
 import ru.naumen.perfhouse.influx.InfluxDAO;
-import ru.naumen.sd40.log.parser.GCParser.GCTimeParser;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.*;
+import ru.naumen.sd40.log.parser.parsers.timeParsers.*;
 
 /**
  * Created by doki on 22.10.16.
@@ -22,6 +23,9 @@ public class App
      * @throws IOException
      * @throws ParseException
      */
+    private static final String SdngMode = "sdng";
+    private static  final String GcMode = "gc";
+    private static final String TopMode = "top";
     public static void main(String[] args) throws IOException, ParseException
     {
         String influxDb = null;
@@ -53,72 +57,30 @@ public class App
 
         HashMap<Long, DataSet> data = new HashMap<>();
 
-        TimeParser timeParser = new TimeParser();
-        GCTimeParser gcTime = new GCTimeParser();
-        if (args.length > 2)
-        {
-            timeParser = new TimeParser(args[2]);
-            gcTime = new GCTimeParser(args[2]);
-        }
-
+        BaseDataHandler dataHandler;
         String mode = System.getProperty("parse.mode", "");
-        switch (mode)
+        switch (mode){
+            case SdngMode:
+                dataHandler = new SingleLineHandler(new SdngDataParser(),new SdngTimeParser(),  data);
+                break;
+            case GcMode:
+                dataHandler = new SingleLineHandler(new GcDataParser(), new GcTimeParser(), data);
+                break;
+            case TopMode:
+                dataHandler = new ChunkHandler(new TopDataParser(), new TopTimeParser(log), data);
+                break;
+            default:
+                throw new IllegalArgumentException(
+                       "Unknown parse mode! Availiable modes: sdng, gc, top. Requested mode: " + mode);
+        }
+        if (args.length > 2)
+            dataHandler.configureTimeParser(args[2]);
+
+        try (BufferedReader br = new BufferedReader(new FileReader(log), dataHandler.getBuffSize()))
         {
-        case "sdng":
-            //Parse sdng
-            try (BufferedReader br = new BufferedReader(new FileReader(log), 32 * 1024 * 1024))
-            {
-                String line;
-                while ((line = br.readLine()) != null)
-                {
-                    long time = timeParser.parseLine(line);
-
-                    if (time == 0)
-                    {
-                        continue;
-                    }
-
-                    int min5 = 5 * 60 * 1000;
-                    long count = time / min5;
-                    long key = count * min5;
-
-                    data.computeIfAbsent(key, k -> new DataSet()).parseLine(line);
-                }
-            }
-            break;
-        case "gc":
-            //Parse gc log
-            try (BufferedReader br = new BufferedReader(new FileReader(log)))
-            {
-                String line;
-                while ((line = br.readLine()) != null)
-                {
-                    long time = gcTime.parseTime(line);
-
-                    if (time == 0)
-                    {
-                        continue;
-                    }
-
-                    int min5 = 5 * 60 * 1000;
-                    long count = time / min5;
-                    long key = count * min5;
-                    data.computeIfAbsent(key, k -> new DataSet()).parseGcLine(line);
-                }
-            }
-            break;
-        case "top":
-            TopParser topParser = new TopParser(log, data);
-            if (args.length > 2)
-            {
-                topParser.configureTimeZone(args[2]);
-            }
-            //Parse top
-            topParser.parse();
-            break;
-        default:
-            throw new IllegalArgumentException(
-                    "Unknown parse mode! Availiable modes: sdng, gc, top. Requested mode: " + mode);
+            String line;
+            while ((line = br.readLine()) != null)
+                dataHandler.handleLine(line);
         }
 
         if (System.getProperty("NoCsv") == null)
