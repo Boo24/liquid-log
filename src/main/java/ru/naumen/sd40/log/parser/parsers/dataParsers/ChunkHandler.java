@@ -1,7 +1,7 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import ru.naumen.sd40.log.parser.DataSet;
-import ru.naumen.sd40.log.parser.IDataBase;
+import ru.naumen.sd40.log.parser.IDataBaseClient;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.ITimeParser;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.TimeHandleHelper;
 
@@ -10,7 +10,7 @@ import java.text.ParseException;
 public class ChunkHandler  extends BaseDataHandler {
 
     private long currentKey;
-    public ChunkHandler(IDataParser dataParser, ITimeParser timeParser, IDataBase db){
+    public ChunkHandler(IDataParser dataParser, ITimeParser timeParser, IDataBaseClient db){
         super(dataParser, timeParser, db);
     }
 

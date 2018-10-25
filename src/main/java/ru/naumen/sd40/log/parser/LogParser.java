@@ -26,7 +26,8 @@ public class LogParser
     public static void main(String[] args) throws IOException, ParseException
     {
         AppSettings settings = new AppSettings(args);
-        InfluxDBClient storage = new InfluxDBClient(settings.influxDbAddr);
+        InfluxDBWriter dbWriter = new InfluxDBWriter(settings.influxDbAddr);
+        InfluxDBClient storage = new InfluxDBClient(dbWriter);
 
         BaseDataHandler dataHandler;
         String mode = System.getProperty("parse.mode", "");
