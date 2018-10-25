@@ -57,6 +57,7 @@ public class LogParser
             while ((line = br.readLine()) != null) {
                 dataHandler.handleLine(line);
             }
+            storage.flush();
         }
     }
 }

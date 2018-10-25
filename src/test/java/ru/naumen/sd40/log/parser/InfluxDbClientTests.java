@@ -49,7 +49,7 @@ public class InfluxDbClientTests {
             //when
             DataSet firstObj = db.get(key);
             key = 43;
-
+            db.get(key);
             DataSet secondObj = db.get(key);
 
             //then
@@ -65,7 +65,7 @@ public class InfluxDbClientTests {
         db.get(key);
         key = 43;
         db.get(key);
-
+        db.flush();
         //then
 
         verify(dbWriter, times(2)).save(anyLong(), anyObject());
