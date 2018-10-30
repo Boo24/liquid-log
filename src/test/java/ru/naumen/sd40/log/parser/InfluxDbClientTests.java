@@ -49,7 +49,6 @@ public class InfluxDbClientTests {
             //when
             DataSet firstObj = db.get(key);
             key = 43;
-            db.get(key);
             DataSet secondObj = db.get(key);
 
             //then
