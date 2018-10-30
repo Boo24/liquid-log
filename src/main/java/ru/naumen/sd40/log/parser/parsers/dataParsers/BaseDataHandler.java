@@ -1,6 +1,5 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
-
 import ru.naumen.sd40.log.parser.IDataBaseClient;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.ITimeParser;
 

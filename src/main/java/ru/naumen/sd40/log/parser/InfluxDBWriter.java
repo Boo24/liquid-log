@@ -3,19 +3,22 @@ package ru.naumen.sd40.log.parser;
 import org.influxdb.dto.BatchPoints;
 import ru.naumen.perfhouse.influx.InfluxDAO;
 
+import javax.inject.Inject;
+
 public class InfluxDBWriter implements IDataBaseWriter{
 
     private InfluxDAO storage = null;
     private String influxDbAddr;
     private BatchPoints points;
+    private boolean trace;
 
-
-    public InfluxDBWriter(String name){
+    @Inject
+    public InfluxDBWriter(InfluxDAO influxDAO, String name, boolean trace){
         influxDbAddr = name;
+        this.trace = trace;
         if (name != null)
         {
-            storage = new InfluxDAO(System.getProperty("influx.host"), System.getProperty("influx.user"),
-                    System.getProperty("influx.password"));
+            storage =  influxDAO;
             storage.init();
             storage.connectToDB(name);
             points = storage.startBatchPoints(influxDbAddr);
@@ -32,7 +35,7 @@ public class InfluxDBWriter implements IDataBaseWriter{
         ActionDoneParser dones = set.getActionsDone();
         dones.calculate();
         ErrorParser errors = set.getErrors();
-        if (System.getProperty("NoCsv") == null)
+        if (trace)
             PrintInCsvFormat(k, dones, errors);
         if (!dones.isNan())
         {

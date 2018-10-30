@@ -5,6 +5,7 @@ import java.io.IOException;
 import java.text.ParseException;
 
 import org.influxdb.dto.BatchPoints;
+import ru.naumen.perfhouse.influx.InfluxDAO;
 import ru.naumen.sd40.log.parser.parsers.dataParsers.*;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.*;
 
@@ -23,14 +24,13 @@ public class LogParser
     private static  final String GcMode = "gc";
     private static final String TopMode = "top";
 
-    public static void main(String[] args) throws IOException, ParseException
+    public static void parse(InfluxDAO influxDAO, AppSettings settings) throws IOException, ParseException
     {
-        AppSettings settings = new AppSettings(args);
-        InfluxDBWriter dbWriter = new InfluxDBWriter(settings.influxDbAddr);
+        InfluxDBWriter dbWriter = new InfluxDBWriter(influxDAO, settings.influxName, settings.trace);
         InfluxDBClient storage = new InfluxDBClient(dbWriter);
 
         BaseDataHandler dataHandler;
-        String mode = System.getProperty("parse.mode", "");
+        String mode = settings.parseMode;
         switch (mode){
             case SdngMode:
                 dataHandler = new SingleLineHandler(new SdngDataParser(),new SdngTimeParser(), storage);

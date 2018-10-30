@@ -1,18 +1,22 @@
 package ru.naumen.sd40.log.parser;
 
+
 public class AppSettings {
     public String logFilename;
-    public String influxDbAddr;
     public String timeZone;
+    public boolean trace;
+    public String parseMode;
+    public String influxName;
 
-    public AppSettings(String[] args){
-        logFilename = args[0];
-        if (args.length > 2)
-            timeZone = args[2];
-        if (args.length > 1)
-        {
-            influxDbAddr = args[1];
-            influxDbAddr = influxDbAddr.replaceAll("-", "_");
-        }
+    public AppSettings(String influxName,String parseMode,
+                        String filepath,String timezone,
+                        String trace){
+        logFilename = filepath;
+        timeZone = timezone;
+        this.parseMode = parseMode;
+        this.influxName = influxName;
+        if(trace != "no")
+            this.trace = true;
+
     }
 }

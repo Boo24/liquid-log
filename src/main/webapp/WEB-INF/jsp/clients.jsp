@@ -46,6 +46,27 @@
   		<h3><strong>Attention!</strong><br>All requests for stored data are made with UTC time.<br>Requested data will be displayed in your browsers timezone.</h3>
 	</div>
 	<br>
+    <form class="parse-form" action="/parse" method="post">
+        <label class="data_label">Influx DB name:
+            <input name="influx" type="text">
+        </label><br>
+        <p>Parsing mode:
+            <br><label><input type="radio"  id="sdng" name="mode" value="sdng" checked> sdng</label><br>
+            <label><input type="radio" id="gc" name="mode" value="gc">gc</label><br>
+            <label><input type="radio" id="top" name="mode" value="top">top</label><br>
+        </p><br>
+        <label>local filepath:
+            <input type="text" name="filepath" >
+        </label><br>
+        <label>timezone:
+            <input type="text" name="timezone">
+        </label><br>
+        <p>trace result:
+            <br><label><input type="radio" name="trace" value="yes" id="trace">Yes</label><br>
+            <label><input type="radio" name="trace" value="no" id="not-trace" checked>No</label><br>
+        </p><br>
+        <button type="submit">Parse</button>
+    </form>
     <h1>Client list</h1>
     <table class="table table-striped table-fixed"> <!-- table-bordered  -->
         <thead class="thead-inverse">
@@ -56,7 +77,7 @@
          <% for(String client:(List<String>)request.getAttribute("clients")) { %>
             <tr>
                 <td class="col-xs-6">
-                    <h4><span><%= client %></span></h2>
+                    <h4><span><%= client %></span></h4>
                 </td>
                 <td class="col-xs-6">
                 	<a class="btn btn-outline-primary" href='<%= ((Map)request.getAttribute("prevMonthLinks")).get(client) %>'>Previous Month</a>
