@@ -3,8 +3,6 @@ package ru.naumen.sd40.log.parser;
 import org.influxdb.dto.BatchPoints;
 import ru.naumen.perfhouse.influx.InfluxDAO;
 
-import javax.inject.Inject;
-
 public class InfluxDBWriter implements IDataBaseWriter{
 
     private InfluxDAO storage = null;
@@ -12,7 +10,6 @@ public class InfluxDBWriter implements IDataBaseWriter{
     private BatchPoints points;
     private boolean trace;
 
-    @Inject
     public InfluxDBWriter(InfluxDAO influxDAO, String name, boolean trace){
         influxDbAddr = name;
         this.trace = trace;
