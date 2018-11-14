@@ -1,8 +1,6 @@
 package ru.naumen.sd40.log.parser;
 
 public class InfluxDBClient implements IDataBaseClient {
-
-
     private long lastKey = -1;
     private DataSet currentDataSet = new DataSet();
     private IDataBaseWriter dbWriter;

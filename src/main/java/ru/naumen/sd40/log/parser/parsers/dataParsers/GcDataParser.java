@@ -1,7 +1,10 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
+import org.springframework.stereotype.Component;
 import ru.naumen.sd40.log.parser.DataSet;
+import ru.naumen.sd40.log.parser.GCParser;
 
+@Component
 public class GcDataParser implements IDataParser {
 
     @Override
@@ -11,7 +14,7 @@ public class GcDataParser implements IDataParser {
 
     @Override
     public void parseLine(String line, DataSet currentData) {
-        currentData.getGc().parseLine(line);
+        currentData.getGcStatistics().addTime(GCParser.parseLine(line));
     }
 
 }

@@ -3,6 +3,7 @@ package ru.naumen.sd40.log.parser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import ru.naumen.sd40.log.parser.data.ErrorStatistics;
 
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
@@ -22,10 +23,10 @@ public class InfluxDbClientTests {
             DataSet secondObj = db.get(key);
 
             //then
-            ErrorParser errors = secondObj.getErrors();
-            Assert.assertTrue(secondObj.cpuData().isNan());
-            Assert.assertTrue(secondObj.getGc().isNan());
-            Assert.assertEquals(0, errors.errorCount+errors.warnCount+errors.fatalCount);
+            ErrorStatistics errors = secondObj.getErrorStatistics();
+            Assert.assertTrue(secondObj.cpuStatistics().isNan());
+            Assert.assertTrue(secondObj.getGcStatistics().isNan());
+            Assert.assertEquals(0, errors.getErrorCount()+errors.getWarnCount()+errors.getFatalCount());
         }
         @Test
         public void mustReturnOldValue() {

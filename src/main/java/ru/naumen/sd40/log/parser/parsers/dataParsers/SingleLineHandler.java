@@ -9,8 +9,8 @@ import java.text.ParseException;
 
 public class SingleLineHandler extends BaseDataHandler {
 
-    public SingleLineHandler(IDataParser dataParser, ITimeParser timeParser, IDataBaseClient db){
-        super(dataParser, timeParser, db);
+    public SingleLineHandler(IDataParser dataParser, ITimeParser timeParser){
+        super(dataParser, timeParser);
     }
     @Override
     public void handleLine(String line) throws ParseException {
