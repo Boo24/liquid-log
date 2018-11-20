@@ -1,7 +1,7 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import org.springframework.stereotype.Component;
-import ru.naumen.sd40.log.parser.DataSet;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.TopDataSet;
 
 import java.text.SimpleDateFormat;
 import java.util.TimeZone;
@@ -9,7 +9,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-public class TopDataParser implements IDataParser {
+public class TopDataParser implements IDataParser<TopDataSet> {
 
     private SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyyMMddHH:mm");
     private Pattern cpuAndMemPattren = Pattern
@@ -27,7 +27,7 @@ public class TopDataParser implements IDataParser {
     }
 
     @Override
-    public void parseLine(String line, DataSet existingDataSet) {
+    public void parseLine(String line, TopDataSet existingDataSet) {
         if (existingDataSet != null)
         {
             //get la

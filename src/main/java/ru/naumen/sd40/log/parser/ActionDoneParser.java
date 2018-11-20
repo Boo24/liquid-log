@@ -1,5 +1,8 @@
 package ru.naumen.sd40.log.parser;
 
+import org.springframework.stereotype.Component;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.SdngDataSet;
+
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Matcher;
@@ -9,6 +12,7 @@ import java.util.regex.Pattern;
 /**
  * Created by doki on 22.10.16.
  */
+@Component
 public class ActionDoneParser
 {
     private static Set<String> EXCLUDED_ACTIONS = new HashSet<>();
@@ -20,7 +24,7 @@ public class ActionDoneParser
 
     private final static Pattern doneRegEx = Pattern.compile("Done\\((\\d+)\\): ?(.*?Action)");
 
-    public static void parseLine(String line, DataSet dataSet)
+    public static void parseLine(String line, SdngDataSet dataSet)
     {
         Matcher matcher = doneRegEx.matcher(line);
 

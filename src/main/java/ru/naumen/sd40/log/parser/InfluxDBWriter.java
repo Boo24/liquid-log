@@ -1,12 +1,14 @@
 package ru.naumen.sd40.log.parser;
 
 import org.influxdb.dto.BatchPoints;
-import org.springframework.stereotype.Component;
 import ru.naumen.perfhouse.influx.InfluxDAO;
 import ru.naumen.sd40.log.parser.data.ActionDoneStatistics;
 import ru.naumen.sd40.log.parser.data.ErrorStatistics;
 import ru.naumen.sd40.log.parser.data.GcStatistics;
 import ru.naumen.sd40.log.parser.data.TopStatistics;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.GcDataSet;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.SdngDataSet;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.TopDataSet;
 
 public class InfluxDBWriter implements IDataBaseWriter{
 
@@ -32,27 +34,34 @@ public class InfluxDBWriter implements IDataBaseWriter{
                 dones.getPercent99(), dones.getPercent999(), dones.getMax(), errorStat.getErrorCount()));
 
     }
+
     @Override
-    public void save(long k, DataSet set){
-        ActionDoneStatistics dones = set.getActionsDoneStatistics();
-        dones.calculate();
-        if (trace)
-            PrintInCsvFormat(k, dones, set.getErrorStatistics());
-        if (!dones.isNan())
-        {
-            storage.storeActionsFromLog(points, influxDbAddr, k, dones, set.getErrorStatistics());
-        }
-
-        GcStatistics gc = set.getGcStatistics();
-        if (!gc.isNan())
-        {
-            storage.storeGc(points, influxDbAddr, k, gc);
-        }
-
+    public void save(long key, TopDataSet set) {
         TopStatistics cpuData = set.cpuStatistics();
         if (!cpuData.isNan())
         {
-            storage.storeTop(points, influxDbAddr, k, cpuData);
+            storage.storeTop(points, influxDbAddr, key, cpuData);
+        }
+    }
+
+    @Override
+    public void save(long key, SdngDataSet set) {
+        ActionDoneStatistics dones = set.getActionsDoneStatistics();
+        dones.calculate();
+        if (trace)
+            PrintInCsvFormat(key, dones, set.getErrorStatistics());
+        if (!dones.isNan())
+        {
+            storage.storeActionsFromLog(points, influxDbAddr, key, dones, set.getErrorStatistics());
+        }
+    }
+
+    @Override
+    public void save(long key, GcDataSet set) {
+        GcStatistics gc = set.getGcStatistics();
+        if (!gc.isNan())
+        {
+            storage.storeGc(points, influxDbAddr, key, gc);
         }
     }
 }

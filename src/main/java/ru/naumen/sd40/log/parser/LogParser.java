@@ -1,6 +1,10 @@
 package ru.naumen.sd40.log.parser;
 import org.springframework.stereotype.Component;
 import ru.naumen.perfhouse.influx.InfluxDAO;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.GcDataSetCreator;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.ICreator;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.SdngDataSetCreator;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.TopDataSetCreator;
 import ru.naumen.sd40.log.parser.parsers.dataParsers.BaseDataHandler;
 import ru.naumen.sd40.log.parser.parsers.dataParsers.GcParser;
 import ru.naumen.sd40.log.parser.parsers.dataParsers.SdngParser;
@@ -31,6 +35,7 @@ public class LogParser
     private static  final String GcMode = "gc";
     private static final String TopMode = "top";
     private static final HashMap<String, BaseDataHandler> modeToParser = new HashMap<>();
+    private static final HashMap<String, ICreator> modeToCreator = new HashMap<>();
     private InfluxDAO influxDAO;
 
     @Inject
@@ -40,13 +45,16 @@ public class LogParser
         modeToParser.put(GcMode, gcParser);
         modeToParser.put(TopMode, topParser);
 
+        modeToCreator.put(SdngMode, new SdngDataSetCreator());
+        modeToCreator.put(GcMode, new GcDataSetCreator());
+        modeToCreator.put(TopMode, new TopDataSetCreator());
     }
 
     public void parse(AppSettings settings) throws IOException, ParseException
     {
-        InfluxDBWriter dbWriter = new InfluxDBWriter(this.influxDAO, settings.influxName, settings.trace);
-        InfluxDBClient storage = new InfluxDBClient(dbWriter);
         String mode = settings.parseMode;
+        InfluxDBWriter dbWriter = new InfluxDBWriter(this.influxDAO, settings.influxName, settings.trace);
+        InfluxDBClient storage = new InfluxDBClient(dbWriter, modeToCreator.get(mode));
         BaseDataHandler dataHandler = modeToParser.get(mode);
         if(mode == TopMode){
             ((TopTimeParser)dataHandler.getTimeParser()).setDataDate(settings.logFilename);

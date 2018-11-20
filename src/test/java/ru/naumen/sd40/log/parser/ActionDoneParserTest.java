@@ -2,13 +2,14 @@ package ru.naumen.sd40.log.parser;
 
 import org.junit.Assert;
 import org.junit.Test;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.SdngDataSet;
 
 public class ActionDoneParserTest {
 
     @Test
     public void mustParseAddAction() {
         //given
-        DataSet dataSet = new DataSet();
+        SdngDataSet dataSet = new SdngDataSet();
 
         //when
         ActionDoneParser.parseLine("Done(10): AddObjectAction", dataSet);
@@ -20,7 +21,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseFormActions() {
         //given
-        DataSet dataSet = new DataSet();
+        SdngDataSet dataSet = new SdngDataSet();
 
         //when
         ActionDoneParser.parseLine("Done(10): GetFormAction", dataSet);
@@ -33,7 +34,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseEditObject() {
         //given
-        DataSet dataSet = new DataSet();
+        SdngDataSet dataSet = new SdngDataSet();
 
         //when
         ActionDoneParser.parseLine("Done(10): EditObjectAction", dataSet);
@@ -45,7 +46,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseSearchObject(){
         //given
-        DataSet dataSet = new DataSet();
+        SdngDataSet dataSet = new SdngDataSet();
 
         //when
         ActionDoneParser.parseLine("Done(10): GetPossibleAgreementsChildsSearchAction", dataSet);
@@ -63,7 +64,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseGetList(){
         //given:
-        DataSet dataSet = new DataSet();
+        SdngDataSet dataSet = new SdngDataSet();
 
         //when:
         ActionDoneParser.parseLine("Done(10): GetDtObjectListAction", dataSet);
@@ -81,7 +82,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseComment(){
         //given:
-        DataSet dataSet = new DataSet();
+        SdngDataSet dataSet = new SdngDataSet();
 
         //when:
         ActionDoneParser.parseLine("Done(10): EditCommentAction", dataSet);
@@ -98,7 +99,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseDtObject(){
         //given:
-        DataSet dataSet = new DataSet();
+        SdngDataSet dataSet = new SdngDataSet();
 
         //when:
         ActionDoneParser.parseLine("Done(10): GetVisibleDtObjectAction", dataSet);

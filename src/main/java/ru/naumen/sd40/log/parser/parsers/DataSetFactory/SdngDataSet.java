@@ -1,25 +1,15 @@
-package ru.naumen.sd40.log.parser;
+package ru.naumen.sd40.log.parser.parsers.DataSetFactory;
 
 import ru.naumen.sd40.log.parser.data.ActionDoneStatistics;
 import ru.naumen.sd40.log.parser.data.ErrorStatistics;
-import ru.naumen.sd40.log.parser.data.GcStatistics;
-import ru.naumen.sd40.log.parser.data.TopStatistics;
 
-/**
- * Created by doki on 22.10.16.
- */
-public class DataSet
-{
-
-    private GcStatistics gcStatistics;
+public class SdngDataSet implements IDataSet {
     private ActionDoneStatistics actionDoneStatistics;
     private ErrorStatistics errorStatistics;
-    private TopStatistics cpuStatistics = new TopStatistics();
 
-    public DataSet()
+    public SdngDataSet()
     {
         errorStatistics = new ErrorStatistics();
-        gcStatistics = new GcStatistics();
         actionDoneStatistics = new ActionDoneStatistics();
     }
 
@@ -31,10 +21,5 @@ public class DataSet
     public ErrorStatistics getErrorStatistics()
     {
         return errorStatistics;
-    }
-    public GcStatistics getGcStatistics(){return gcStatistics;}
-    public TopStatistics cpuStatistics()
-    {
-        return cpuStatistics;
     }
 }

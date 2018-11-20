@@ -1,7 +1,6 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import org.springframework.stereotype.Component;
-import ru.naumen.sd40.log.parser.InfluxDBClient;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.SdngTimeParser;
 
 import javax.inject.Inject;

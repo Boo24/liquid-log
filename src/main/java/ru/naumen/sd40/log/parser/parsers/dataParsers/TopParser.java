@@ -1,15 +1,16 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import org.springframework.stereotype.Component;
-import ru.naumen.sd40.log.parser.IDataBaseClient;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.TopTimeParser;
 
+import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
 public class TopParser extends ChunkHandler {
 
+    @Inject
     public TopParser(TopDataParser dataParser, TopTimeParser timeParser) {
         super(dataParser, timeParser);
     }

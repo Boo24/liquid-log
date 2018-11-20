@@ -1,11 +1,11 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 import org.springframework.stereotype.Component;
 import ru.naumen.sd40.log.parser.ActionDoneParser;
-import ru.naumen.sd40.log.parser.DataSet;
 import ru.naumen.sd40.log.parser.ErrorParser;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.SdngDataSet;
 
 @Component
-public class SdngDataParser implements IDataParser {
+public class SdngDataParser implements IDataParser<SdngDataSet> {
 
     @Override
     public int getBufferSize() {
@@ -13,7 +13,7 @@ public class SdngDataParser implements IDataParser {
     }
 
     @Override
-    public void parseLine(String line, DataSet currentData) {
+    public void parseLine(String line, SdngDataSet currentData) {
         ActionDoneParser.parseLine(line, currentData);
         if(ErrorParser.checkError(line))
             currentData.getErrorStatistics().changeErrorCount(1);
