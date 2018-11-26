@@ -1,18 +1,21 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.TopTimeParser;
+import ru.naumen.sd40.log.parser.parsers.timeParsers.TopTimeParserCreator;
 
 import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
+@RequestScope
 public class TopParser extends ChunkHandler {
 
     @Inject
-    public TopParser(TopDataParser dataParser, TopTimeParser timeParser) {
-        super(dataParser, timeParser);
+    public TopParser(TopDataParser dataParser, TopTimeParserCreator timeParserFactory) {
+        super(dataParser, timeParserFactory);
     }
 
     public void setDateTime(String file){

@@ -1,5 +1,6 @@
 package ru.naumen.sd40.log.parser;
 import org.springframework.stereotype.Component;
+import org.springframework.web.context.annotation.RequestScope;
 import ru.naumen.perfhouse.influx.InfluxDAO;
 import ru.naumen.sd40.log.parser.parsers.DataSetFactory.GcDataSetCreator;
 import ru.naumen.sd40.log.parser.parsers.DataSetFactory.ICreator;
@@ -23,6 +24,7 @@ import java.util.HashMap;
  */
 
 @Component
+@RequestScope
 public class LogParser
 {
     /**

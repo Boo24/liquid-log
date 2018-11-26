@@ -2,6 +2,7 @@ package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import ru.naumen.sd40.log.parser.IDataBaseClient;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.ITimeParser;
+import ru.naumen.sd40.log.parser.parsers.timeParsers.ITimeParserCreator;
 
 import java.text.ParseException;
 
@@ -16,9 +17,9 @@ public abstract class BaseDataHandler {
     protected ITimeParser timeParser;
     protected IDataBaseClient dataBase;
 
-    public BaseDataHandler(IDataParser dataParser, ITimeParser timeParser){
+    public BaseDataHandler(IDataParser dataParser, ITimeParserCreator timeParserFactory){
         this.dataParser = dataParser;
-        this.timeParser = timeParser;
+        this.timeParser = timeParserFactory.create();
     }
 
     public void configureTimeParser(String value) {
