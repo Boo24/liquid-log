@@ -7,7 +7,6 @@ import org.springframework.web.context.annotation.RequestScope;
 public class TopTimeParserCreator implements ITimeParserCreator<TopTimeParser> {
 
     @Override
-    @RequestScope
     public TopTimeParser create() {
         return new TopTimeParser();
     }
