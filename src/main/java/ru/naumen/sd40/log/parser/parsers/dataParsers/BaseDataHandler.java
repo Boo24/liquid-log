@@ -17,9 +17,9 @@ public abstract class BaseDataHandler {
     protected ITimeParser timeParser;
     protected IDataBaseClient dataBase;
 
-    public BaseDataHandler(IDataParser dataParser, ITimeParserCreator timeParserFactory){
+    public BaseDataHandler(IDataParser dataParser, ITimeParserCreator timeParser){
         this.dataParser = dataParser;
-        this.timeParser = timeParserFactory.create();
+        this.timeParser = timeParser.create();
     }
 
     public void configureTimeParser(String value) {

@@ -24,7 +24,6 @@ import java.util.HashMap;
  */
 
 @Component
-@RequestScope
 public class LogParser
 {
     /**
