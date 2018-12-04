@@ -3,6 +3,8 @@ package ru.naumen.sd40.log.parser;
 import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
+import ru.naumen.sd40.log.parser.data.ErrorStatistics;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.*;
 
 import static org.mockito.Matchers.anyLong;
 import static org.mockito.Matchers.anyObject;
@@ -15,27 +17,26 @@ public class InfluxDbClientTests {
         @Test
         public void mustReturnEmptyDataSet() {
             //given
-            IDataBaseClient db = new InfluxDBClient(dbWriter);
+            IDataBaseClient db = new InfluxDBClient(dbWriter, new GcDataSetCreator());
             long key = 42;
             //when
 
-            DataSet secondObj = db.get(key);
+
+            GcDataSet secondObj = (GcDataSet) db.get(key);
 
             //then
-            ErrorParser errors = secondObj.getErrors();
-            Assert.assertTrue(secondObj.cpuData().isNan());
-            Assert.assertTrue(secondObj.getGc().isNan());
-            Assert.assertEquals(0, errors.errorCount+errors.warnCount+errors.fatalCount);
+            Assert.assertTrue(secondObj.getGcStatistics().isNan());
+
         }
         @Test
         public void mustReturnOldValue() {
             //given
-            IDataBaseClient db = new InfluxDBClient(dbWriter);
+            IDataBaseClient db = new InfluxDBClient(dbWriter, new SdngDataSetCreator());
             long key = 42;
             //when
-            DataSet firstObj = db.get(key);
+            SdngDataSet firstObj = (SdngDataSet)db.get(key);
 
-            DataSet secondObj = db.get(key);
+            SdngDataSet secondObj = (SdngDataSet)db.get(key);
 
             //then
             Assert.assertEquals(firstObj, secondObj);
@@ -44,12 +45,12 @@ public class InfluxDbClientTests {
         @Test
         public void mustReturnDifferentValuesWhenDifferentKeys() {
             //given
-            IDataBaseClient db = new InfluxDBClient(dbWriter);
+            IDataBaseClient db = new InfluxDBClient(dbWriter, new SdngDataSetCreator());
             long key = 42;
             //when
-            DataSet firstObj = db.get(key);
+            IDataSet firstObj = db.get(key);
             key = 43;
-            DataSet secondObj = db.get(key);
+            IDataSet secondObj = db.get(key);
 
             //then
             Assert.assertNotEquals(firstObj, secondObj);
@@ -58,7 +59,7 @@ public class InfluxDbClientTests {
     @Test
     public void mustSaveTwoStringsWhenTwoDifferentKeys() {
         //given
-        IDataBaseClient db = new InfluxDBClient(dbWriter);
+        IDataBaseClient db = new InfluxDBClient(dbWriter, new SdngDataSetCreator());
         long key = 42;
         //when
         db.get(key);
@@ -67,7 +68,7 @@ public class InfluxDbClientTests {
         db.flush();
         //then
 
-        verify(dbWriter, times(2)).save(anyLong(), anyObject());
+        verify(dbWriter, times(2)).save(anyLong(), (SdngDataSet) anyObject());
     }
 
 

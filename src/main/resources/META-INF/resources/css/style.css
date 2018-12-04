@@ -1,4 +1,4 @@
-table {
+        table {
             width: 100%;
             border-collapse: collapse;
         }
@@ -30,4 +30,14 @@ table {
         }       	
         .container {
         	width: 85%;
+        }
+
+        .parse-form {
+            width: 50em;
+            padding-left: 10em;
+            background-color: black;
+        }
+
+        input[input] {
+            padding-left: 10em;
         }

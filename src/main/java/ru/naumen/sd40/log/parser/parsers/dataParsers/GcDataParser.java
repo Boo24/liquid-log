@@ -1,8 +1,11 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
-import ru.naumen.sd40.log.parser.DataSet;
+import org.springframework.stereotype.Component;
+import ru.naumen.sd40.log.parser.GCParser;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.GcDataSet;
 
-public class GcDataParser implements IDataParser {
+@Component
+public class GcDataParser implements IDataParser<GcDataSet> {
 
     @Override
     public int getBufferSize() {
@@ -10,8 +13,8 @@ public class GcDataParser implements IDataParser {
     }
 
     @Override
-    public void parseLine(String line, DataSet currentData) {
-        currentData.getGc().parseLine(line);
+    public void parseLine(String line, GcDataSet currentData) {
+        currentData.getGcStatistics().addTime(GCParser.parseLine(line));
     }
 
 }

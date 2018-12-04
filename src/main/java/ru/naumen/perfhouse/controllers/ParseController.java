@@ -4,7 +4,6 @@ import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.bind.annotation.RequestParam;
-import ru.naumen.perfhouse.influx.InfluxDAO;
 import ru.naumen.sd40.log.parser.AppSettings;
 import ru.naumen.sd40.log.parser.LogParser;
 
@@ -15,12 +14,11 @@ import java.text.ParseException;
 @Controller
 public class ParseController {
 
-    private InfluxDAO influxDAO;
-
+    private LogParser logParser;
     @Inject
-    public ParseController(InfluxDAO influxDAO)
+    public ParseController(LogParser logParser)
     {
-        this.influxDAO = influxDAO;
+        this.logParser = logParser;
     }
     @RequestMapping(path = "parse", method = RequestMethod.POST)
     public void parseLogs(@RequestParam("influx") String influxName, @RequestParam("mode") String parseMode,
@@ -28,7 +26,8 @@ public class ParseController {
                          @RequestParam("trace") String trace) throws IOException, ParseException
 
     {
+
         AppSettings settings = new AppSettings(influxName, parseMode, filepath, timezone, trace);
-        LogParser.parse(influxDAO,settings);
+        logParser.parse(settings);
     }
 }

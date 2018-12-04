@@ -16,13 +16,18 @@ public abstract class BaseDataHandler {
     protected ITimeParser timeParser;
     protected IDataBaseClient dataBase;
 
-    public BaseDataHandler(IDataParser dataParser, ITimeParser timeParser, IDataBaseClient db){
+    public BaseDataHandler(IDataParser dataParser, ITimeParser timeParser){
         this.dataParser = dataParser;
         this.timeParser = timeParser;
-        this.dataBase = db;
     }
 
     public void configureTimeParser(String value) {
         timeParser.configureTimeZone(value);
+    }
+
+    public ITimeParser getTimeParser() {return timeParser;}
+
+    public void setDataBaseClient(IDataBaseClient db){
+        this.dataBase = db;
     }
 }

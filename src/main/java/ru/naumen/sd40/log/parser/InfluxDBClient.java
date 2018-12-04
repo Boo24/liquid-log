@@ -1,25 +1,28 @@
 package ru.naumen.sd40.log.parser;
 
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.*;
+
 public class InfluxDBClient implements IDataBaseClient {
-
-
     private long lastKey = -1;
-    private DataSet currentDataSet = new DataSet();
+    private IDataSet currentDataSet;
     private IDataBaseWriter dbWriter;
+    private ICreator creator;
 
-    public InfluxDBClient(IDataBaseWriter dbWriter){
+    public InfluxDBClient(IDataBaseWriter dbWriter, ICreator creator){
         this.dbWriter = dbWriter;
+        this.creator = creator;
+        this.currentDataSet = creator.create();
     }
 
 
     @Override
-    public DataSet get(long key) {
+    public IDataSet get(long key) {
         if (this.lastKey != key)
         {
             if(this.lastKey != -1)
-                dbWriter.save(this.lastKey, currentDataSet);
+               save();
             this.lastKey = key;
-            currentDataSet = new DataSet();
+            currentDataSet = creator.create();
         }
 
         return currentDataSet;
@@ -27,8 +30,15 @@ public class InfluxDBClient implements IDataBaseClient {
 
     @Override
     public void flush() {
-        dbWriter.save(this.lastKey, currentDataSet);
+        save();
     }
 
-
+    private void save(){
+        if(currentDataSet instanceof TopDataSet)
+            dbWriter.save(this.lastKey, (TopDataSet) currentDataSet);
+        else if(currentDataSet instanceof SdngDataSet)
+            dbWriter.save(this.lastKey, (SdngDataSet) currentDataSet);
+        else
+            dbWriter.save(this.lastKey, (GcDataSet) currentDataSet);
+    }
 }

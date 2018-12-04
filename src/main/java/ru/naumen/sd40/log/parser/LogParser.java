@@ -1,17 +1,28 @@
 package ru.naumen.sd40.log.parser;
+import org.springframework.stereotype.Component;
+import ru.naumen.perfhouse.influx.InfluxDAO;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.GcDataSetCreator;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.ICreator;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.SdngDataSetCreator;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.TopDataSetCreator;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.BaseDataHandler;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.GcParser;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.SdngParser;
+import ru.naumen.sd40.log.parser.parsers.dataParsers.TopParser;
+import ru.naumen.sd40.log.parser.parsers.timeParsers.TopTimeParser;
+
+import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
 import java.text.ParseException;
-
-import org.influxdb.dto.BatchPoints;
-import ru.naumen.perfhouse.influx.InfluxDAO;
-import ru.naumen.sd40.log.parser.parsers.dataParsers.*;
-import ru.naumen.sd40.log.parser.parsers.timeParsers.*;
+import java.util.HashMap;
 
 /**
  * Created by doki on 22.10.16.
  */
+
+@Component
 public class LogParser
 {
     /**
@@ -23,28 +34,33 @@ public class LogParser
     private static final String SdngMode = "sdng";
     private static  final String GcMode = "gc";
     private static final String TopMode = "top";
+    private static final HashMap<String, BaseDataHandler> modeToParser = new HashMap<>();
+    private static final HashMap<String, ICreator> modeToCreator = new HashMap<>();
+    private InfluxDAO influxDAO;
 
-    public static void parse(InfluxDAO influxDAO, AppSettings settings) throws IOException, ParseException
+    @Inject
+    public LogParser(InfluxDAO influxDAO, SdngParser sdngParser, GcParser gcParser, TopParser topParser){
+        this.influxDAO = influxDAO;
+        modeToParser.put(SdngMode, sdngParser);
+        modeToParser.put(GcMode, gcParser);
+        modeToParser.put(TopMode, topParser);
+
+        modeToCreator.put(SdngMode, new SdngDataSetCreator());
+        modeToCreator.put(GcMode, new GcDataSetCreator());
+        modeToCreator.put(TopMode, new TopDataSetCreator());
+    }
+
+    public void parse(AppSettings settings) throws IOException, ParseException
     {
-        InfluxDBWriter dbWriter = new InfluxDBWriter(influxDAO, settings.influxName, settings.trace);
-        InfluxDBClient storage = new InfluxDBClient(dbWriter);
-
-        BaseDataHandler dataHandler;
         String mode = settings.parseMode;
-        switch (mode){
-            case SdngMode:
-                dataHandler = new SingleLineHandler(new SdngDataParser(),new SdngTimeParser(), storage);
-                break;
-            case GcMode:
-                dataHandler = new SingleLineHandler(new GcDataParser(), new GcTimeParser(), storage);
-                break;
-            case TopMode:
-                dataHandler = new ChunkHandler(new TopDataParser(), new TopTimeParser(settings.logFilename), storage);
-                break;
-            default:
-                throw new IllegalArgumentException(
-                       "Unknown parse mode! Availiable modes: sdng, gc, top. Requested mode: " + mode);
+        InfluxDBWriter dbWriter = new InfluxDBWriter(this.influxDAO, settings.influxName, settings.trace);
+        InfluxDBClient storage = new InfluxDBClient(dbWriter, modeToCreator.get(mode));
+        BaseDataHandler dataHandler = modeToParser.get(mode);
+        if(mode == TopMode){
+            ((TopTimeParser)dataHandler.getTimeParser()).setDataDate(settings.logFilename);
         }
+        dataHandler.setDataBaseClient(storage);
+
         if (settings.timeZone != null)
             dataHandler.configureTimeParser(settings.timeZone);
 

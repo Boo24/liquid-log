@@ -1,48 +1,26 @@
 package ru.naumen.sd40.log.parser;
 
+import org.springframework.stereotype.Component;
+
 import java.util.regex.Pattern;
 
 /**
  * Created by doki on 22.10.16.
  */
+@Component
 public class ErrorParser
 {
-    long warnCount;
-    long errorCount;
-    long fatalCount;
+    static final Pattern warnRegEx = Pattern.compile("^\\d+ \\[.+?\\] \\(.+?\\) WARN");
+    static final Pattern errorRegEx = Pattern.compile("^\\d+ \\[.+?\\] \\(.+?\\) ERROR");
+    static final Pattern fatalRegEx = Pattern.compile("^\\d+ \\[.+?\\] \\(.+?\\) FATAL");
 
-    Pattern warnRegEx = Pattern.compile("^\\d+ \\[.+?\\] \\(.+?\\) WARN");
-    Pattern errorRegEx = Pattern.compile("^\\d+ \\[.+?\\] \\(.+?\\) ERROR");
-    Pattern fatalRegEx = Pattern.compile("^\\d+ \\[.+?\\] \\(.+?\\) FATAL");
-
-    public void parseLine(String line)
-    {
-        if (warnRegEx.matcher(line).find())
-        {
-            warnCount++;
-        }
-        if (errorRegEx.matcher(line).find())
-        {
-            errorCount++;
-        }
-        if (fatalRegEx.matcher(line).find())
-        {
-            fatalCount++;
-        }
+    public static boolean checkWarn(String line){
+        return warnRegEx.matcher(line).find();
     }
 
-    public long getWarnCount()
-    {
-        return warnCount;
-    }
+    public static boolean checkError(String line){ return errorRegEx.matcher(line).find(); }
 
-    public long getErrorCount()
-    {
-        return errorCount;
-    }
-
-    public long getFatalCount()
-    {
-        return fatalCount;
+    public static boolean checkFatal(String line){
+        return fatalRegEx.matcher(line).find();
     }
 }
