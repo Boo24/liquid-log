@@ -21,4 +21,5 @@ public class SingleLineHandler extends BaseDataHandler {
         dataParser.parseLine(line, obj);
 
     }
+
 }

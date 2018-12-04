@@ -2,6 +2,9 @@ package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import org.springframework.stereotype.Component;
 import org.springframework.web.context.annotation.RequestScope;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.ICreator;
+import ru.naumen.sd40.log.parser.parsers.DataSetFactory.TopDataSetCreator;
+import ru.naumen.sd40.log.parser.parsers.IParser;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.TopTimeParser;
 import ru.naumen.sd40.log.parser.parsers.timeParsers.TopTimeParserCreator;
 
@@ -10,8 +13,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Component
-@RequestScope
-public class TopParser extends ChunkHandler {
+public class TopParser extends ChunkHandler implements IParser {
 
     @Inject
     public TopParser(TopDataParser dataParser, TopTimeParserCreator timeParserFactory) {
@@ -23,5 +25,15 @@ public class TopParser extends ChunkHandler {
         if (!matcher.find())
             throw new IllegalArgumentException();
         ((TopTimeParser)this.timeParser).setDataDate(matcher.group(0).replaceAll("-", ""));
+    }
+
+    @Override
+    public String getName() {
+        return "Top";
+    }
+
+    @Override
+    public ICreator getDataSetCreator() {
+        return new TopDataSetCreator();
     }
 }

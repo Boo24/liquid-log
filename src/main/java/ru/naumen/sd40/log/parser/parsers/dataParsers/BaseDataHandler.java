@@ -31,4 +31,6 @@ public abstract class BaseDataHandler {
     public void setDataBaseClient(IDataBaseClient db){
         this.dataBase = db;
     }
+
+
 }

@@ -1,3 +1,5 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
+
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="java.util.Map" %>
 <%@ page import="java.util.List" %>
@@ -51,9 +53,13 @@
             <input name="influx" type="text">
         </label><br>
         <p>Parsing mode:
-            <br><label><input type="radio"  id="sdng" name="mode" value="sdng" checked> sdng</label><br>
-            <label><input type="radio" id="gc" name="mode" value="gc">gc</label><br>
-            <label><input type="radio" id="top" name="mode" value="top">top</label><br>
+            <br><label>
+                <select name="mode">
+
+                <c:forEach items="${parsers}" var="mode">
+                    <option value="${mode}">${mode}</option>
+                </c:forEach>
+            </select></label><br>
         </p><br>
         <label>local filepath:
             <input type="text" name="filepath" >
