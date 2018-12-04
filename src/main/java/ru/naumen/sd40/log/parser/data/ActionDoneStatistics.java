@@ -80,8 +80,6 @@ public class ActionDoneStatistics {
         nan = count == 0;
     }
 
-
-
     public int geListActions()
     {
         return getListActions;

@@ -1,7 +1,7 @@
 package ru.naumen.sd40.log.parser.parsers.dataParsers;
 
 import org.springframework.stereotype.Component;
-import ru.naumen.sd40.log.parser.parsers.timeParsers.GcTimeParser;
+import ru.naumen.sd40.log.parser.parsers.timeParsers.GcTimeParserCreator;
 
 import javax.inject.Inject;
 
@@ -9,7 +9,7 @@ import javax.inject.Inject;
 public class GcParser extends SingleLineHandler {
 
     @Inject
-    public GcParser(GcDataParser dataParser, GcTimeParser timeParser) {
+    public GcParser(GcDataParser dataParser, GcTimeParserCreator timeParser) {
         super(dataParser, timeParser);
     }
 }
