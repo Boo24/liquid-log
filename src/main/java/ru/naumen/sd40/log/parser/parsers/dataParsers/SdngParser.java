@@ -10,7 +10,7 @@ import ru.naumen.sd40.log.parser.parsers.timeParsers.SdngTimeParserCreator;
 
 import javax.inject.Inject;
 
-@Component
+@Component("Sdng")
 public class SdngParser extends SingleLineHandler implements IParser {
 
     @Inject
@@ -18,12 +18,6 @@ public class SdngParser extends SingleLineHandler implements IParser {
         super(dataParser, timeParserFactory);
 
     }
-
-    @Override
-    public String getName() {
-        return "Sdng";
-    }
-
 
     @Override
     public ICreator getDataSetCreator() {

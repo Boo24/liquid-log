@@ -1,8 +1,11 @@
 package ru.naumen.perfhouse.controllers;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
@@ -35,10 +38,10 @@ public class ClientsController
     private List<String> parsers;
 
     @Inject
-    public ClientsController(InfluxDAO influxDAO, List<IParser> parsers)
+    public ClientsController(InfluxDAO influxDAO, Map<String, IParser> parsers)
     {
         this.influxDAO = influxDAO;
-        this.parsers = parsers.stream().map(IParser::getName).collect(Collectors.toList());
+        this.parsers = new ArrayList<>(parsers.keySet());
     }
 
     @RequestMapping(path = "/")

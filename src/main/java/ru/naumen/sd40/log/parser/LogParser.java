@@ -22,6 +22,7 @@ import java.text.ParseException;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 /**
  * Created by doki on 22.10.16.
@@ -38,21 +39,26 @@ public class LogParser
      */
 
     private static final String TopMode = "Top";
-    private static final HashMap<String, BaseDataHandler> modeToParser = new HashMap<>();
+    private static Map<String, BaseDataHandler> modeToParser = new HashMap<>();
+    private static Map<String, ICreator> modeToDataSetCreator = new HashMap<>();
     private InfluxDAO influxDAO;
 
     @Inject
-    public LogParser(InfluxDAO influxDAO, IParser[] parsers){
+    public LogParser(InfluxDAO influxDAO, Map<String, IParser> parsers){
         this.influxDAO = influxDAO;
-        Arrays.stream(parsers).forEach(x -> modeToParser.put(x.getName(), (BaseDataHandler) x));
+        parsers.forEach((k, v) -> {
+            modeToParser.put(k, (BaseDataHandler)v);
+            modeToDataSetCreator.put(k, v.getDataSetCreator());
+        });
     }
 
     public void parse(AppSettings settings) throws IOException, ParseException
     {
         String mode = settings.parseMode;
         InfluxDBWriter dbWriter = new InfluxDBWriter(this.influxDAO, settings.influxName, settings.trace);
-        InfluxDBClient storage = new InfluxDBClient(dbWriter, ((IParser)modeToParser.get(mode)).getDataSetCreator());
+
         BaseDataHandler dataHandler = modeToParser.get(mode);
+        InfluxDBClient storage = new InfluxDBClient(dbWriter, modeToDataSetCreator.get(mode));
         if(mode == TopMode){
             ((TopTimeParser)dataHandler.getTimeParser()).setDataDate(settings.logFilename);
         }

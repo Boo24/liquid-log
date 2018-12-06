@@ -12,7 +12,7 @@ import javax.inject.Inject;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-@Component
+@Component("Top")
 public class TopParser extends ChunkHandler implements IParser {
 
     @Inject
@@ -25,11 +25,6 @@ public class TopParser extends ChunkHandler implements IParser {
         if (!matcher.find())
             throw new IllegalArgumentException();
         ((TopTimeParser)this.timeParser).setDataDate(matcher.group(0).replaceAll("-", ""));
-    }
-
-    @Override
-    public String getName() {
-        return "Top";
     }
 
     @Override
