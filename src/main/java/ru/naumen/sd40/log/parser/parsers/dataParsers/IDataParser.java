@@ -6,4 +6,5 @@ public interface IDataParser<DS extends IDataSet> {
     int getBufferSize();
 
     void parseLine(String line, DS currentData);
+
 }

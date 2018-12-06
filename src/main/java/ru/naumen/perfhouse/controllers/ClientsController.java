@@ -1,8 +1,12 @@
 package ru.naumen.perfhouse.controllers;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.servlet.http.HttpServletRequest;
@@ -21,6 +25,7 @@ import org.springframework.web.bind.annotation.RequestMethod;
 import org.springframework.web.servlet.ModelAndView;
 
 import ru.naumen.perfhouse.influx.InfluxDAO;
+import ru.naumen.sd40.log.parser.parsers.IParser;
 
 /**
  * Created by dkirpichenkov on 26.10.16.
@@ -30,11 +35,13 @@ public class ClientsController
 {
     private Logger LOG = LoggerFactory.getLogger(ClientsController.class);
     private InfluxDAO influxDAO;
+    private List<String> parsers;
 
     @Inject
-    public ClientsController(InfluxDAO influxDAO)
+    public ClientsController(InfluxDAO influxDAO, Map<String, IParser> parsers)
     {
         this.influxDAO = influxDAO;
+        this.parsers = new ArrayList<>(parsers.keySet());
     }
 
     @RequestMapping(path = "/")
@@ -69,7 +76,7 @@ public class ClientsController
         model.put("last864links", clientLast864Links);
         model.put("last2016links", clientLast2016Links);
         model.put("prevMonthLinks", clientPreviousMonthLinks);
-
+        model.put("parsers", parsers);
         return new ModelAndView("clients", model, HttpStatus.OK);
     }
 

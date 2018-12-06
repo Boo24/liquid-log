@@ -6,6 +6,7 @@ import ru.naumen.sd40.log.parser.parsers.DataSetFactory.GcDataSetCreator;
 import ru.naumen.sd40.log.parser.parsers.DataSetFactory.ICreator;
 import ru.naumen.sd40.log.parser.parsers.DataSetFactory.SdngDataSetCreator;
 import ru.naumen.sd40.log.parser.parsers.DataSetFactory.TopDataSetCreator;
+import ru.naumen.sd40.log.parser.parsers.IParser;
 import ru.naumen.sd40.log.parser.parsers.dataParsers.BaseDataHandler;
 import ru.naumen.sd40.log.parser.parsers.dataParsers.GcParser;
 import ru.naumen.sd40.log.parser.parsers.dataParsers.SdngParser;
@@ -16,8 +17,12 @@ import javax.inject.Inject;
 import java.io.BufferedReader;
 import java.io.FileReader;
 import java.io.IOException;
+import java.lang.reflect.Array;
 import java.text.ParseException;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
 
 /**
  * Created by doki on 22.10.16.
@@ -32,31 +37,28 @@ public class LogParser
      * @throws IOException
      * @throws ParseException
      */
-    private static final String SdngMode = "sdng";
-    private static  final String GcMode = "gc";
-    private static final String TopMode = "top";
-    private static final HashMap<String, BaseDataHandler> modeToParser = new HashMap<>();
-    private static final HashMap<String, ICreator> modeToCreator = new HashMap<>();
+
+    private static final String TopMode = "Top";
+    private static Map<String, BaseDataHandler> modeToParser = new HashMap<>();
+    private static Map<String, ICreator> modeToDataSetCreator = new HashMap<>();
     private InfluxDAO influxDAO;
 
     @Inject
-    public LogParser(InfluxDAO influxDAO, SdngParser sdngParser, GcParser gcParser, TopParser topParser){
+    public LogParser(InfluxDAO influxDAO, Map<String, IParser> parsers){
         this.influxDAO = influxDAO;
-        modeToParser.put(SdngMode, sdngParser);
-        modeToParser.put(GcMode, gcParser);
-        modeToParser.put(TopMode, topParser);
-
-        modeToCreator.put(SdngMode, new SdngDataSetCreator());
-        modeToCreator.put(GcMode, new GcDataSetCreator());
-        modeToCreator.put(TopMode, new TopDataSetCreator());
+        parsers.forEach((k, v) -> {
+            modeToParser.put(k, (BaseDataHandler)v);
+            modeToDataSetCreator.put(k, v.getDataSetCreator());
+        });
     }
 
     public void parse(AppSettings settings) throws IOException, ParseException
     {
         String mode = settings.parseMode;
         InfluxDBWriter dbWriter = new InfluxDBWriter(this.influxDAO, settings.influxName, settings.trace);
-        InfluxDBClient storage = new InfluxDBClient(dbWriter, modeToCreator.get(mode));
+
         BaseDataHandler dataHandler = modeToParser.get(mode);
+        InfluxDBClient storage = new InfluxDBClient(dbWriter, modeToDataSetCreator.get(mode));
         if(mode == TopMode){
             ((TopTimeParser)dataHandler.getTimeParser()).setDataDate(settings.logFilename);
         }
@@ -64,9 +66,6 @@ public class LogParser
 
         if (settings.timeZone != null)
             dataHandler.configureTimeParser(settings.timeZone);
-
-        if (System.getProperty("NoCsv") == null)
-            System.out.print("Timestamp;Actions;Min;Mean;Stddev;50%%;95%%;99%%;99.9%%;Max;Errors\n");
 
         try (BufferedReader br = new BufferedReader(new FileReader(settings.logFilename), dataHandler.getBuffSize()))
         {
