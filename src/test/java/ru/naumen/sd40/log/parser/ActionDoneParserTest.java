@@ -9,7 +9,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseAddAction() {
         //given
-        SdngDataSet dataSet = new SdngDataSet();
+        SdngDataSet dataSet = new SdngDataSet(0);
 
         //when
         ActionDoneParser.parseLine("Done(10): AddObjectAction", dataSet);
@@ -21,7 +21,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseFormActions() {
         //given
-        SdngDataSet dataSet = new SdngDataSet();
+        SdngDataSet dataSet = new SdngDataSet(0);
 
         //when
         ActionDoneParser.parseLine("Done(10): GetFormAction", dataSet);
@@ -34,7 +34,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseEditObject() {
         //given
-        SdngDataSet dataSet = new SdngDataSet();
+        SdngDataSet dataSet = new SdngDataSet(0);
 
         //when
         ActionDoneParser.parseLine("Done(10): EditObjectAction", dataSet);
@@ -46,7 +46,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseSearchObject(){
         //given
-        SdngDataSet dataSet = new SdngDataSet();
+        SdngDataSet dataSet = new SdngDataSet(0);
 
         //when
         ActionDoneParser.parseLine("Done(10): GetPossibleAgreementsChildsSearchAction", dataSet);
@@ -64,7 +64,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseGetList(){
         //given:
-        SdngDataSet dataSet = new SdngDataSet();
+        SdngDataSet dataSet = new SdngDataSet(0);
 
         //when:
         ActionDoneParser.parseLine("Done(10): GetDtObjectListAction", dataSet);
@@ -82,7 +82,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseComment(){
         //given:
-        SdngDataSet dataSet = new SdngDataSet();
+        SdngDataSet dataSet = new SdngDataSet(0);
 
         //when:
         ActionDoneParser.parseLine("Done(10): EditCommentAction", dataSet);
@@ -99,7 +99,7 @@ public class ActionDoneParserTest {
     @Test
     public void mustParseDtObject(){
         //given:
-        SdngDataSet dataSet = new SdngDataSet();
+        SdngDataSet dataSet = new SdngDataSet(0);
 
         //when:
         ActionDoneParser.parseLine("Done(10): GetVisibleDtObjectAction", dataSet);

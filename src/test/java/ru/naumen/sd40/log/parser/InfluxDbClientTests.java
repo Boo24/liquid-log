@@ -68,7 +68,7 @@ public class InfluxDbClientTests {
         db.flush();
         //then
 
-        verify(dbWriter, times(2)).save(anyLong(), (SdngDataSet) anyObject());
+        verify(dbWriter, times(2)).save(anyObject());
     }
 
 

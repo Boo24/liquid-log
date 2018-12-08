@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class SdngDataSetCreator implements ICreator<SdngDataSet> {
     @Override
 
-    public SdngDataSet create() {
-        return new SdngDataSet();
+    public SdngDataSet create(long key) {
+        return new SdngDataSet(key);
     }
 }
