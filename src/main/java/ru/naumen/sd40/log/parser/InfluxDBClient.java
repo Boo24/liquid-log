@@ -30,12 +30,14 @@ public class InfluxDBClient implements IDataBaseClient {
     }
 
     @Override
-    public void flush() {
+    public void flush()
+    {
         save();
     }
 
     private void save(){
         Point point = currentDataSet.prepareForStorage();
-        dbWriter.save(point);
+        if(point != null)
+            dbWriter.save(point);
     }
 }
