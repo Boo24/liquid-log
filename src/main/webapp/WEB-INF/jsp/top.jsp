@@ -1,3 +1,4 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="ru.naumen.perfhouse.statdata.Constants"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
 <%@ page import="ru.naumen.sd40.log.parser.parsers.dataTypes.TOPDataType" %>
@@ -85,11 +86,12 @@
         Feel free to hide/show specific data by clicking on chart's legend
     </p>
     <ul class="nav nav-pills">
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %><%=path %>">Responses</a></li>
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/actions<%=path %>">Performed actions</a></li>
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/gc<%=path %>">Garbage Collection</a></li>
-		<li class="nav-item"><a class="nav-link active" >Top data</a></li>
-	</ul>
+        <c:forEach items="${types}" var="type">
+            <li class="nav-item">
+                <a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/${type}<%=path%>">${type}</a>
+            </li>
+        </c:forEach>
+    </ul>
 </div>
 
 <div class="container">
