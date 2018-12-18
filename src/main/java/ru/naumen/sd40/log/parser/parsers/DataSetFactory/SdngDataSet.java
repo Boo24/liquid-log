@@ -4,14 +4,10 @@ import org.influxdb.dto.Point;
 import ru.naumen.perfhouse.statdata.Constants;
 import ru.naumen.sd40.log.parser.data.ActionDoneStatistics;
 import ru.naumen.sd40.log.parser.data.ErrorStatistics;
+import ru.naumen.sd40.log.parser.parsers.dataTypes.ActionsDataType;
+import ru.naumen.sd40.log.parser.parsers.dataTypes.ResponseDataType;
 
 import java.util.concurrent.TimeUnit;
-
-import static ru.naumen.perfhouse.statdata.Constants.PerformedActions.*;
-import static ru.naumen.perfhouse.statdata.Constants.PerformedActions.CATALOGS_ACTIONS;
-import static ru.naumen.perfhouse.statdata.Constants.ResponseTimes.*;
-import static ru.naumen.perfhouse.statdata.Constants.ResponseTimes.ERRORS;
-import static ru.naumen.perfhouse.statdata.Constants.ResponseTimes.MAX;
 
 public class SdngDataSet implements IDataSet {
     private ActionDoneStatistics actionDoneStatistics;
@@ -42,24 +38,24 @@ public class SdngDataSet implements IDataSet {
         ErrorStatistics errors = getErrorStatistics();
         if(!dones.isNan()){
             Point.Builder builder = Point.measurement(Constants.MEASUREMENT_NAME).time(key, TimeUnit.MILLISECONDS)
-                    .addField(COUNT, dones.getCount())
+                    .addField(ResponseDataType.COUNT, dones.getCount())
                     .addField("min", dones.getMin())
-                    .addField(MEAN, dones.getMean())
-                    .addField(STDDEV, dones.getStddev())
-                    .addField(PERCENTILE50, dones.getPercent50())
-                    .addField(PERCENTILE95, dones.getPercent95())
-                    .addField(PERCENTILE99, dones.getPercent99())
-                    .addField(PERCENTILE999, dones.getPercent999())
-                    .addField(MAX, dones.getMax())
-                    .addField(ERRORS, errors.getErrorCount())
-                    .addField(ADD_ACTIONS, dones.getAddObjectActions())
-                    .addField(EDIT_ACTIONS, dones.getEditObjectsActions())
-                    .addField(LIST_ACTIONS, dones.geListActions())
-                    .addField(COMMENT_ACTIONS, dones.getCommentActions())
-                    .addField(GET_FORM_ACTIONS, dones.getFormActions())
-                    .addField(GET_DT_OBJECT_ACTIONS, dones.getDtObjectActions())
-                    .addField(SEARCH_ACTIONS, dones.getSearchActions())
-                    .addField(CATALOGS_ACTIONS, dones.getCatalogsAction());
+                    .addField(ResponseDataType.MEAN, dones.getMean())
+                    .addField(ResponseDataType.STDDEV, dones.getStddev())
+                    .addField(ResponseDataType.PERCENTILE50, dones.getPercent50())
+                    .addField(ResponseDataType.PERCENTILE95, dones.getPercent95())
+                    .addField(ResponseDataType.PERCENTILE99, dones.getPercent99())
+                    .addField(ResponseDataType.PERCENTILE999, dones.getPercent999())
+                    .addField(ResponseDataType.MAX, dones.getMax())
+                    .addField(ResponseDataType.ERRORS, errors.getErrorCount())
+                    .addField(ActionsDataType.ADD_ACTIONS, dones.getAddObjectActions())
+                    .addField(ActionsDataType.EDIT_ACTIONS, dones.getEditObjectsActions())
+                    .addField(ActionsDataType.LIST_ACTIONS, dones.geListActions())
+                    .addField(ActionsDataType.COMMENT_ACTIONS, dones.getCommentActions())
+                    .addField(ActionsDataType.GET_FORM_ACTIONS, dones.getFormActions())
+                    .addField(ActionsDataType.GET_DT_OBJECT_ACTIONS, dones.getDtObjectActions())
+                    .addField(ActionsDataType.SEARCH_ACTIONS, dones.getSearchActions())
+                    .addField(ActionsDataType.CATALOGS_ACTIONS, dones.getCatalogsAction());
             return builder.build();
         }
         return null;
