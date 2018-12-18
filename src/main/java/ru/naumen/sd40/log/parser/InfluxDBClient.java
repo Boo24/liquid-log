@@ -1,5 +1,6 @@
 package ru.naumen.sd40.log.parser;
 
+import org.influxdb.dto.Point;
 import ru.naumen.sd40.log.parser.parsers.DataSetFactory.*;
 
 public class InfluxDBClient implements IDataBaseClient {
@@ -11,7 +12,7 @@ public class InfluxDBClient implements IDataBaseClient {
     public InfluxDBClient(IDataBaseWriter dbWriter, ICreator creator){
         this.dbWriter = dbWriter;
         this.creator = creator;
-        this.currentDataSet = creator.create();
+        this.currentDataSet = creator.create(lastKey);
     }
 
 
@@ -22,23 +23,21 @@ public class InfluxDBClient implements IDataBaseClient {
             if(this.lastKey != -1)
                save();
             this.lastKey = key;
-            currentDataSet = creator.create();
+            currentDataSet = creator.create(key);
         }
 
         return currentDataSet;
     }
 
     @Override
-    public void flush() {
+    public void flush()
+    {
         save();
     }
 
     private void save(){
-        if(currentDataSet instanceof TopDataSet)
-            dbWriter.save(this.lastKey, (TopDataSet) currentDataSet);
-        else if(currentDataSet instanceof SdngDataSet)
-            dbWriter.save(this.lastKey, (SdngDataSet) currentDataSet);
-        else
-            dbWriter.save(this.lastKey, (GcDataSet) currentDataSet);
+        Point point = currentDataSet.prepareForStorage();
+        if(point != null)
+            dbWriter.save(point);
     }
 }

@@ -1,6 +1,7 @@
 package ru.naumen.sd40.log.parser;
 
 import org.influxdb.dto.BatchPoints;
+import org.influxdb.dto.Point;
 import ru.naumen.perfhouse.influx.InfluxDAO;
 import ru.naumen.sd40.log.parser.data.ActionDoneStatistics;
 import ru.naumen.sd40.log.parser.data.ErrorStatistics;
@@ -36,32 +37,7 @@ public class InfluxDBWriter implements IDataBaseWriter{
     }
 
     @Override
-    public void save(long key, TopDataSet set) {
-        TopStatistics cpuData = set.cpuStatistics();
-        if (!cpuData.isNan())
-        {
-            storage.storeTop(points, influxDbAddr, key, cpuData);
-        }
-    }
-
-    @Override
-    public void save(long key, SdngDataSet set) {
-        ActionDoneStatistics dones = set.getActionsDoneStatistics();
-        dones.calculate();
-        if (trace)
-            PrintInCsvFormat(key, dones, set.getErrorStatistics());
-        if (!dones.isNan())
-        {
-            storage.storeActionsFromLog(points, influxDbAddr, key, dones, set.getErrorStatistics());
-        }
-    }
-
-    @Override
-    public void save(long key, GcDataSet set) {
-        GcStatistics gc = set.getGcStatistics();
-        if (!gc.isNan())
-        {
-            storage.storeGc(points, influxDbAddr, key, gc);
-        }
+    public void save(Point point) {
+        storage.store(points, influxDbAddr, point);
     }
 }

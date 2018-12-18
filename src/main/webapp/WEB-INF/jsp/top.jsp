@@ -1,9 +1,7 @@
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="ru.naumen.perfhouse.statdata.Constants"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="org.influxdb.dto.QueryResult.Series" %>
+<%@ page import="ru.naumen.sd40.log.parser.parsers.dataTypes.TOPDataType" %>
 
 <html>
 
@@ -33,12 +31,12 @@
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <%
     Number times[] = (Number[])request.getAttribute(Constants.TIME);
-    Number avgLa[]=  (Number[])request.getAttribute(Constants.Top.AVG_LA);
-    Number avgCpu[]=  (Number[])request.getAttribute(Constants.Top.AVG_CPU);
-    Number avgMem[]=  (Number[])request.getAttribute(Constants.Top.AVG_MEM);
-    Number maxLa[]=  (Number[])request.getAttribute(Constants.Top.MAX_LA);
-    Number maxCpu[]=  (Number[])request.getAttribute(Constants.Top.MAX_CPU);
-    Number maxMem[]=  (Number[])request.getAttribute(Constants.Top.MAX_MEM);
+    Number avgLa[]=  (Number[])request.getAttribute(TOPDataType.AVG_LA);
+    Number avgCpu[]=  (Number[])request.getAttribute(TOPDataType.AVG_CPU);
+    Number avgMem[]=  (Number[])request.getAttribute(TOPDataType.AVG_MEM);
+    Number maxLa[]=  (Number[])request.getAttribute(TOPDataType.MAX_LA);
+    Number maxCpu[]=  (Number[])request.getAttribute(TOPDataType.MAX_CPU);
+    Number maxMem[]=  (Number[])request.getAttribute(TOPDataType.MAX_MEM);
     
   //Prepare links
   	String path="";
@@ -88,11 +86,12 @@
         Feel free to hide/show specific data by clicking on chart's legend
     </p>
     <ul class="nav nav-pills">
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %><%=path %>">Responses</a></li>
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/actions<%=path %>">Performed actions</a></li>
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/gc<%=path %>">Garbage Collection</a></li>
-		<li class="nav-item"><a class="nav-link active" >Top data</a></li>
-	</ul>
+        <c:forEach items="${types}" var="type">
+            <li class="nav-item">
+                <a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/${type}<%=path%>">${type}</a>
+            </li>
+        </c:forEach>
+    </ul>
 </div>
 
 <div class="container">

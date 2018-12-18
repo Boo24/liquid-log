@@ -6,7 +6,7 @@ import org.springframework.stereotype.Component;
 public class TopDataSetCreator implements ICreator<TopDataSet> {
 
     @Override
-    public TopDataSet create() {
-        return new TopDataSet();
+    public TopDataSet create(long key) {
+        return new TopDataSet(key);
     }
 }

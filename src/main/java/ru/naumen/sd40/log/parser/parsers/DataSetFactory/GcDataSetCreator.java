@@ -5,7 +5,7 @@ import org.springframework.stereotype.Component;
 @Component
 public class GcDataSetCreator implements ICreator<GcDataSet> {
     @Override
-    public GcDataSet create() {
-        return new GcDataSet();
+    public GcDataSet create(long key) {
+        return new GcDataSet(key);
     }
 }

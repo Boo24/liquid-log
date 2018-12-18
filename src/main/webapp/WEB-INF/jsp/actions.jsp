@@ -1,10 +1,7 @@
-<%@page import="ru.naumen.perfhouse.statdata.DataType"%>
+<%@ taglib prefix="c" uri="http://java.sun.com/jsp/jstl/core" %>
 <%@page import="ru.naumen.perfhouse.statdata.Constants"%>
 <%@ page language="java" contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
-<%@ page import="java.util.Map" %>
-<%@ page import="java.util.List" %>
-<%@ page import="java.util.Date" %>
-<%@ page import="org.influxdb.dto.QueryResult.Series" %>
+<%@ page import="ru.naumen.sd40.log.parser.parsers.dataTypes.ActionsDataType" %>
 
 <html>
 
@@ -25,15 +22,15 @@
 <script src="http://code.highcharts.com/highcharts.js"></script>
 <%
     Number times[] = (Number[])request.getAttribute(Constants.TIME);
-    Number add[]=  (Number[])request.getAttribute(Constants.PerformedActions.ADD_ACTIONS);
-    Number edit[] = (Number[])request.getAttribute(Constants.PerformedActions.EDIT_ACTIONS);
-    Number list[] = (Number[])request.getAttribute(Constants.PerformedActions.LIST_ACTIONS);
-    Number comment[] = (Number[])request.getAttribute(Constants.PerformedActions.COMMENT_ACTIONS);
-    Number form[] = (Number[])request.getAttribute(Constants.PerformedActions.GET_FORM_ACTIONS);
-    Number dtos[] = (Number[])request.getAttribute(Constants.PerformedActions.GET_DT_OBJECT_ACTIONS);
-    Number search[] = (Number[])request.getAttribute(Constants.PerformedActions.SEARCH_ACTIONS);
-    Number actionsSumm[] = (Number[])request.getAttribute(Constants.PerformedActions.ACTIONS_COUNT);
-    Number catalogs[] = (Number[])request.getAttribute(Constants.PerformedActions.CATALOGS_ACTIONS);
+    Number add[]=  (Number[])request.getAttribute(ActionsDataType.ADD_ACTIONS);
+    Number edit[] = (Number[])request.getAttribute(ActionsDataType.EDIT_ACTIONS);
+    Number list[] = (Number[])request.getAttribute(ActionsDataType.LIST_ACTIONS);
+    Number comment[] = (Number[])request.getAttribute(ActionsDataType.COMMENT_ACTIONS);
+    Number form[] = (Number[])request.getAttribute(ActionsDataType.GET_FORM_ACTIONS);
+    Number dtos[] = (Number[])request.getAttribute(ActionsDataType.GET_DT_OBJECT_ACTIONS);
+    Number search[] = (Number[])request.getAttribute(ActionsDataType.SEARCH_ACTIONS);
+    Number actionsSumm[] = (Number[])request.getAttribute(ActionsDataType.ACTIONS_COUNT);
+    Number catalogs[] = (Number[])request.getAttribute(ActionsDataType.CATALOGS_ACTIONS);
     
     
   //Prepare links
@@ -84,11 +81,12 @@
         Feel free to hide/show specific data by clicking on chart's legend
     </p>
     <ul class="nav nav-pills">
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %><%=path%>">Responses</a></li>
-		<li class="nav-item"><a class="nav-link active">Performed actions</a></li>
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/gc<%=path%>">Garbage Collection</a></li>
-		<li class="nav-item"><a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/top<%=path%>">Top data</a></li>
-	</ul>
+        <c:forEach items="${types}" var="type">
+            <li class="nav-item">
+                <a class="btn btn-outline-primary" href="/history/${client}<%=custom %>/${type}<%=path%>">${type}</a>
+            </li>
+        </c:forEach>
+    </ul>
 </div>
 
 <!-- Gc chart -->
