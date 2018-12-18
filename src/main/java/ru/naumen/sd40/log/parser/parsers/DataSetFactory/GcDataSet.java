@@ -3,12 +3,9 @@ package ru.naumen.sd40.log.parser.parsers.DataSetFactory;
 import org.influxdb.dto.Point;
 import ru.naumen.perfhouse.statdata.Constants;
 import ru.naumen.sd40.log.parser.data.GcStatistics;
+import ru.naumen.sd40.log.parser.parsers.dataTypes.GCDataType;
 
 import java.util.concurrent.TimeUnit;
-
-import static ru.naumen.perfhouse.statdata.Constants.GarbageCollection.AVARAGE_GC_TIME;
-import static ru.naumen.perfhouse.statdata.Constants.GarbageCollection.GCTIMES;
-import static ru.naumen.perfhouse.statdata.Constants.GarbageCollection.MAX_GC_TIME;
 
 public class GcDataSet implements IDataSet {
     private GcStatistics gcStatistics;
@@ -29,9 +26,9 @@ public class GcDataSet implements IDataSet {
 
         return Point.measurement(Constants.MEASUREMENT_NAME)
                 .time(key, TimeUnit.MILLISECONDS)
-                .addField(GCTIMES, gc.getGcTimes())
-                .addField(AVARAGE_GC_TIME, gc.getCalculatedAvg())
-                .addField(MAX_GC_TIME, gc.getMaxGcTime())
+                .addField(GCDataType.GCTIMES, gc.getGcTimes())
+                .addField(GCDataType.AVARAGE_GC_TIME, gc.getCalculatedAvg())
+                .addField(GCDataType.MAX_GC_TIME, gc.getMaxGcTime())
                 .build();
     }
 
